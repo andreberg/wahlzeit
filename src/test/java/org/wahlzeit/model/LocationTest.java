@@ -7,8 +7,13 @@ import static org.junit.Assert.assertTrue;
 public class LocationTest {
 
     @Test
-    public void testDefaultCoordinate() {
+    public void testDefaultConstructor() {
         assertTrue(new Location().getCoordinate().isEqual(new Coordinate(0,0,0)));
+    }
+
+    @Test
+    public void testCoordinateConstructor() {
+        assertTrue(new Location(new Coordinate(1,2,3)).getCoordinate().isEqual(new Coordinate(1,2,3)));
     }
 
     @Test
@@ -22,5 +27,10 @@ public class LocationTest {
     public void setCoordinateWithNullShouldThrowException() {
         Location loc = new Location();
         loc.setCoordinate(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void constructorWithNullCoordShouldTrowException() {
+        new Location(null);
     }
 }

@@ -5,6 +5,8 @@ import java.lang.*;
 public class Coordinate {
 
     private final double x, y, z;
+    private Location location = null;
+
 
     public Coordinate(double x, double y, double z) {
 
@@ -27,6 +29,18 @@ public class Coordinate {
         return (Double.compare(x, other.getX()) == 0) &&
                 (Double.compare(y, other.getY()) == 0) &&
                 (Double.compare(z, other.getZ()) == 0);
+    }
+
+    public boolean hasLocation() {
+        return (null != location);
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location newLocation) {
+        location = newLocation;
     }
 
     public double getX() {
