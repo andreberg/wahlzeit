@@ -73,6 +73,8 @@ public class Photo extends DataObject {
 	 */
 	protected Tags tags = Tags.EMPTY_TAGS;
 
+	protected Location location = null;
+
 	/**
 	 * 
 	 */
@@ -444,6 +446,18 @@ public class Photo extends DataObject {
 	 */
 	public Tags getTags() {
 		return tags;
+	}
+
+	public boolean hasLocation() {
+		return (null != location);
+	}
+
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location newLocation) {
+		location = newLocation;
 	}
 
 	/**
