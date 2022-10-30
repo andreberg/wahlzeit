@@ -3,6 +3,7 @@ package org.wahlzeit.model;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class CoordinateTest {
 
@@ -35,5 +36,21 @@ public class CoordinateTest {
     @Test
     public void testConstructorWithNominalArgs() {
         assertTrue(new Coordinate(150.3456, 3.14159, 22.0/7.0).isEqual(new Coordinate(150.3456,3.14159,22.0/7.0)));
+    }
+
+    @Test
+    public void testGetDistance() {
+        Coordinate a = new Coordinate(2, 3, 1);
+        Coordinate b = new Coordinate(8,5,0);
+        double distance = a.getDistance(b);
+        assertTrue(Double.compare(distance, 6.4031242374328485) == 0);
+    }
+
+    @Test
+    public void testGetDistanceWithNegativeArgs() {
+        Coordinate a = new Coordinate(2, 3, 1);
+        Coordinate b = new Coordinate(8,-5,0);
+        double distance = a.getDistance(b);
+        assertTrue(Double.compare(distance, 6.782329983125268) == 0);
     }
 }

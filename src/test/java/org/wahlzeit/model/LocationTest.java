@@ -31,6 +31,6 @@ public class LocationTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void constructorWithNullCoordShouldTrowException() {
-        new Location(null);
+        new Location((Coordinate) null);
     }
 }
