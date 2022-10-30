@@ -326,6 +326,15 @@ public class PhotoManager extends ObjectManager {
 			SysLog.logQuery(stmt);
 			stmt.executeUpdate();					
 		}
+
+		Location location = photo.getLocation();
+		stmt = getReadingStatement("INSERT INTO locations VALUES(?, ?)");
+		stmt.setInt(1, location.getId().asInt());
+		stmt.setInt(2, location.getCoordinate().getId().asInt());
+		SysLog.logQuery(stmt);
+		stmt.executeUpdate();
+
+		LocationManager.getInstance().updateDependents(location);
 	}
 		
 	/**
