@@ -59,6 +59,7 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 			user.addPhoto(photo); 
 			
 			photo.setTags(new Tags(tags));
+			photo.setLocation(new Location());
 
 			pm.savePhoto(photo);
 
