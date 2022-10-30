@@ -1,12 +1,32 @@
 package org.wahlzeit.model;
 
 import java.lang.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Objects;
 
-public class Coordinate {
+import org.wahlzeit.services.*;
 
-    private final double x, y, z;
+public class Coordinate extends DataObject {
+
+    public static final Coordinate NULL_COORDINATE = new Coordinate(0, 0, 0);
+
+    protected CoordinateId id;
+    protected static CoordinateId lastCoordinateId = new CoordinateId(0);
+
+    private double x, y, z;
+
     private Location location = null;
 
+    public Coordinate(ResultSet rset) throws SQLException {
+        readFrom(rset);
+    }
+
+    public Coordinate(CoordinateId myId) {
+        id = myId;
+        incWriteCount();
+    }
 
     public Coordinate(double x, double y, double z) {
 
@@ -16,6 +36,23 @@ public class Coordinate {
         this.x = Math.max(0.0, x);
         this.y = Math.max(0.0, y);
         this.z = Math.max(0.0, z);
+
+        id = getNextCoordinateId();
+        incWriteCount();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (!(o instanceof Coordinate)) {
+            return false;
+        }
+        return isEqual((Coordinate) o);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, x, y, z, location);
     }
 
     public boolean isEqual(Coordinate other) {
@@ -41,6 +78,7 @@ public class Coordinate {
 
     public void setLocation(Location newLocation) {
         location = newLocation;
+        incWriteCount();
     }
 
     public double getX() {
@@ -55,4 +93,66 @@ public class Coordinate {
         return z;
     }
 
+    protected double getDistance(Coordinate other) {
+
+        if (null == other) {
+            return 0;
+        }
+
+        double xdiff = other.getX() - x;
+        double ydiff = other.getY() - y;
+        double zdiff = other.getZ() - z;
+
+        return Math.sqrt((xdiff * xdiff) + (ydiff * ydiff) + (zdiff * zdiff));
+    }
+
+    @Override
+    public String getIdAsString() {
+        return String.valueOf(id);
+    }
+
+    @Override
+    public void readFrom(ResultSet rset) throws SQLException {
+
+        id = new CoordinateId(rset.getInt("id"));
+        x = rset.getDouble("x");
+        y = rset.getDouble("y");
+        z = rset.getDouble("z");
+        location = LocationManager.getLocation(LocationId.getIdFromInt(rset.getInt("location")));
+    }
+
+    @Override
+    public void writeOn(ResultSet rset) throws SQLException {
+
+        rset.updateInt("id", id.asInt());
+        rset.updateDouble("x", x);
+        rset.updateDouble("y", y);
+        rset.updateDouble("z", z);
+        rset.updateInt("location", hasLocation() ? location.getId().asInt() : 0);
+    }
+
+    @Override
+    public void writeId(PreparedStatement stmt, int pos) throws SQLException {
+        stmt.setInt(pos, id.asInt());
+    }
+
+    public CoordinateId getId() {
+        return id;
+    }
+
+    public static synchronized CoordinateId getNextCoordinateId() {
+
+        if (lastCoordinateId == null) {
+            return lastCoordinateId = CoordinateId.NULL_ID;
+        }
+        return lastCoordinateId = lastCoordinateId.getNextId();
+    }
+
+    public static synchronized CoordinateId getLastCoordinateId() {
+        return lastCoordinateId;
+    }
+
+    public static synchronized void setLastCoordinateId(CoordinateId newId) {
+        lastCoordinateId = newId;
+    }
 }
