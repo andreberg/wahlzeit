@@ -29,7 +29,8 @@ CREATE TABLE photos (
 	status integer,
 	praise_sum integer,
 	no_votes integer,
-	creation_time bigint
+	creation_time bigint,
+	location integer
 );
 
 CREATE TABLE tags (
@@ -48,16 +49,31 @@ CREATE TABLE cases (
 	decision_time bigint
 );
 
+CREATE TABLE coordinates (
+    id integer PRIMARY KEY,
+    x double precision,
+    y double precision,
+    z double precision,
+    location integer
+);
+
+CREATE TABLE locations (
+    id integer PRIMARY KEY,
+    coordinate integer
+);
+
 CREATE TABLE globals (
 	id integer PRIMARY KEY,
 	last_user_id integer,
 	last_photo_id integer,
 	last_case_id integer,
-	last_session_id integer
+	last_session_id integer,
+    last_coordinate_id integer,
+    last_location_id integer
 );
 
-INSERT INTO globals (id, last_user_id, last_photo_id, last_case_id, last_session_id)
-	VALUES (0, 1, 0, 0, 0);
+INSERT INTO globals (id, last_user_id, last_photo_id, last_case_id, last_session_id, last_coordinate_id, last_location_id)
+	VALUES (0, 1, 0, 0, 0, 0, 0);
 
 INSERT INTO users (id, name, name_as_tag, email_address, "password", rights, status)
 	VALUES (1, 'admin', 'admin', 'root@localhost', 'admin', 4, 1);
