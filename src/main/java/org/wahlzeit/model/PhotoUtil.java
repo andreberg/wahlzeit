@@ -23,16 +23,25 @@ public class PhotoUtil {
 	 */
 	public static Photo createPhoto(File source, PhotoId id) throws Exception {
 		Photo result = PhotoFactory.getInstance().createPhoto(id);
-		
+		setWidthAndHeightForResult(result, source, id);
+		return result;
+	}
+
+	public static CGIPhoto createCGIPhoto(File source, PhotoId id) throws Exception {
+		CGIPhoto result = CGIPhotoFactory.getInstance().createPhoto(id);
+		setWidthAndHeightForResult(result, source, id);
+		return result;
+	}
+
+	protected static void setWidthAndHeightForResult(Photo result, File source, PhotoId id) throws Exception {
+
 		Image sourceImage = createImageFiles(source, id);
 
 		int sourceWidth = sourceImage.getWidth(null);
 		int sourceHeight = sourceImage.getHeight(null);
 		result.setWidthAndHeight(sourceWidth, sourceHeight);
-
-		return result;
 	}
-	
+
 	/**
 	 * 
 	 */
