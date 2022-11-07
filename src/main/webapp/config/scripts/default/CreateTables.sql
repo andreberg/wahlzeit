@@ -23,6 +23,7 @@ CREATE TABLE photos (
 	owner_email_address text,
 	owner_language integer,
 	owner_home_page text,
+	software_name text,
 	width integer,
 	height integer,
 	tags text,
@@ -53,8 +54,7 @@ CREATE TABLE coordinates (
     id integer PRIMARY KEY,
     x double precision,
     y double precision,
-    z double precision,
-    location integer
+    z double precision
 );
 
 CREATE TABLE locations (
