@@ -27,7 +27,9 @@ public class ShowUserPhotoFormHandler extends AbstractWebFormHandler {
 	 * 
 	 */
 	protected void doMakeWebPart(UserSession us, WebPart part) {
-		Photo photo = us.getPhoto();
+		Photo _photo = us.getPhoto();
+		CGIPhoto photo = new CGIPhoto(_photo);
+
 		String id = photo.getId().asString();
 		part.addString(Photo.ID, id);
 		part.addString(Photo.THUMB, getPhotoThumb(us, photo));
@@ -37,6 +39,8 @@ public class ShowUserPhotoFormHandler extends AbstractWebFormHandler {
 		String tags = photo.getTags().asString();
 		tags = !StringUtil.isNullOrEmptyString(tags) ? tags : us.cfg().getNoTags();
 		part.maskAndAddString(Photo.TAGS, tags);
+
+		part.maskAndAddString(CGIPhoto.SOFTWARE, photo.getSoftwareName());
 		
 		String photoStatus = us.cfg().asValueString(photo.getStatus());
 		part.addString(Photo.STATUS, photoStatus);

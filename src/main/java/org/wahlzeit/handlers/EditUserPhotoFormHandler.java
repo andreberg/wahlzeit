@@ -38,14 +38,16 @@ public class EditUserPhotoFormHandler extends AbstractWebFormHandler {
 		part.addStringFromArgs(args, UserSession.MESSAGE);
 
 		String id = us.getAsString(args, Photo.ID);
-		Photo photo = PhotoManager.getPhoto(id);
+		Photo _photo = PhotoManager.getPhoto(id);
+		CGIPhoto photo = new CGIPhoto(_photo);
 
 		part.addString(Photo.ID, id);
 		part.addString(Photo.THUMB, getPhotoThumb(us, photo));
 		
 		part.addString(Photo.PRAISE, photo.getPraiseAsString(us.cfg()));
 		part.maskAndAddString(Photo.TAGS, photo.getTags().asString());
-		
+		part.maskAndAddString(CGIPhoto.SOFTWARE, photo.getSoftwareName());
+
 		part.addString(Photo.IS_INVISIBLE, HtmlUtil.asCheckboxCheck(photo.getStatus().isInvisible()));
 		part.addString(Photo.STATUS, us.cfg().asValueString(photo.getStatus()));
 		part.addString(Photo.UPLOADED_ON, us.cfg().asDateString(photo.getCreationTime()));	
@@ -66,10 +68,14 @@ public class EditUserPhotoFormHandler extends AbstractWebFormHandler {
 	protected String doHandlePost(UserSession us, Map args) {
 		String id = us.getAndSaveAsString(args, Photo.ID);
 		PhotoManager pm = PhotoManager.getInstance();
-		Photo photo = PhotoManager.getPhoto(id);
+		Photo _photo = PhotoManager.getPhoto(id);
+		CGIPhoto photo = new CGIPhoto(_photo);
 
 		String tags = us.getAndSaveAsString(args, Photo.TAGS);
 		photo.setTags(new Tags(tags));
+
+		String software = us.getAndSaveAsString(args, CGIPhoto.SOFTWARE);
+		photo.setSoftwareName(software);
 
 		String status = us.getAndSaveAsString(args, Photo.IS_INVISIBLE);
 		boolean isInvisible = (status != null) && status.equals("on");

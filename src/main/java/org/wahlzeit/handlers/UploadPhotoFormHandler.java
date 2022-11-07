@@ -31,7 +31,7 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 	protected void doMakeWebPart(UserSession us, WebPart part) {
 		Map<String, Object> args = us.getSavedArgs();
 		part.addStringFromArgs(args, UserSession.MESSAGE);
-
+		part.maskAndAddStringFromArgs(args, CGIPhoto.SOFTWARE);
 		part.maskAndAddStringFromArgs(args, Photo.TAGS);
 	}
 	
@@ -40,6 +40,7 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 	 */
 	protected String doHandlePost(UserSession us, Map args) {
 		String tags = us.getAndSaveAsString(args, Photo.TAGS);
+		String software = us.getAndSaveAsString(args, CGIPhoto.SOFTWARE);
 
 		if (!StringUtil.isLegalTagsString(tags)) {
 			us.setMessage(us.cfg().getInputIsInvalid());
@@ -47,10 +48,11 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 		}
 
 		try {
-			PhotoManager pm = PhotoManager.getInstance();
+			CGIPhotoManager pm = CGIPhotoManager.getMyInstance();
+
 			String sourceFileName = us.getAsString(args, "fileName");
 			File file = new File(sourceFileName);
-			Photo photo = pm.createPhoto(file);
+			CGIPhoto photo = pm.createPhoto(file);
 
 			String targetFileName = SysConfig.getBackupDir().asString() + photo.getId().asString();
 			createBackup(sourceFileName, targetFileName);
@@ -60,11 +62,12 @@ public class UploadPhotoFormHandler extends AbstractWebFormHandler {
 			
 			photo.setTags(new Tags(tags));
 			photo.setLocation(new Location());
+			photo.setSoftwareName(software);
 
 			pm.savePhoto(photo);
 
 			StringBuffer sb = UserLog.createActionEntry("UploadPhoto");
-			UserLog.addCreatedObject(sb, "Photo", photo.getId().asString());
+			UserLog.addCreatedObject(sb, photo.getClass().getName(), photo.getId().asString());
 			UserLog.log(sb);
 			
 			us.setTwoLineMessage(us.cfg().getPhotoUploadSucceeded(), us.cfg().getKeepGoing());
