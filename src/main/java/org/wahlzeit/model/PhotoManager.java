@@ -328,6 +328,10 @@ public class PhotoManager extends ObjectManager {
 		}
 
 		Location location = photo.getLocation();
+
+		stmt = getReadingStatement("DELETE FROM locations WHERE id = ?");
+		deleteObject(location, stmt);
+
 		stmt = getReadingStatement("INSERT INTO locations VALUES(?, ?)");
 		stmt.setInt(1, location.getId().asInt());
 		stmt.setInt(2, location.getCoordinate().getId().asInt());
