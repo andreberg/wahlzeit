@@ -173,6 +173,7 @@ public interface ModelConfig extends Configuration {
 	public String asYesOrNoString(boolean yesOrNo);
 	public String asDateString(long millis);
 	public String asPhotoSummary(String un);
+	public String asCGIPhotoSummary(String un, String sn);
 	public String asPhotoCaption(String un, URL url);
 	public String asPraiseString(double praise);
 

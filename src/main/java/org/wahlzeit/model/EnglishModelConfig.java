@@ -46,6 +46,10 @@ public class EnglishModelConfig extends AbstractModelConfig {
 		return result;
 	}
 
+	public String asCGIPhotoSummary(String un, String sn) {
+		return asPhotoSummary(un) + ", made with " + sn;
+	}
+
 	/**
 	 * 
 	 */

@@ -46,6 +46,10 @@ public class GermanModelConfig extends AbstractModelConfig {
 		return result;
 	}
 
+	public String asCGIPhotoSummary(String un, String sn) {
+		return asPhotoSummary(un) + ", erstellt mit " + sn;
+	}
+
 	/**
 	 * 
 	 */
