@@ -66,12 +66,14 @@ public class LocationManager extends ObjectManager {
         Location location = (Location) obj;
         Coordinate coordinate = location.getCoordinate();
 
-        PreparedStatement stmt = getReadingStatement("INSERT INTO coordinates VALUES(?, ?, ?, ?, ?)");
+        PreparedStatement stmt = getReadingStatement("DELETE FROM coordinates WHERE id = ?");
+        deleteObject(coordinate, stmt);
+
+        stmt = getReadingStatement("INSERT INTO coordinates VALUES(?, ?, ?, ?)");
         stmt.setInt(1, coordinate.getId().asInt());
         stmt.setDouble(2, coordinate.getX());
         stmt.setDouble(3, coordinate.getY());
         stmt.setDouble(4, coordinate.getZ());
-        stmt.setInt(5, location.getId().asInt());
 
         SysLog.logQuery(stmt);
         stmt.executeUpdate();

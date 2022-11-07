@@ -10,14 +10,10 @@ import org.wahlzeit.services.*;
 
 public class Coordinate extends DataObject {
 
-    public static final Coordinate NULL_COORDINATE = new Coordinate(0, 0, 0);
-
     protected CoordinateId id;
     protected static CoordinateId lastCoordinateId = new CoordinateId(0);
 
     private double x, y, z;
-
-    private Location location = null;
 
     public Coordinate(ResultSet rset) throws SQLException {
         readFrom(rset);
@@ -52,7 +48,7 @@ public class Coordinate extends DataObject {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, x, y, z, location);
+        return Objects.hash(id, x, y, z);
     }
 
     public boolean isEqual(Coordinate other) {
@@ -66,19 +62,6 @@ public class Coordinate extends DataObject {
         return (Double.compare(x, other.getX()) == 0) &&
                 (Double.compare(y, other.getY()) == 0) &&
                 (Double.compare(z, other.getZ()) == 0);
-    }
-
-    public boolean hasLocation() {
-        return (null != location);
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location newLocation) {
-        location = newLocation;
-        incWriteCount();
     }
 
     public double getX() {
@@ -118,7 +101,6 @@ public class Coordinate extends DataObject {
         x = rset.getDouble("x");
         y = rset.getDouble("y");
         z = rset.getDouble("z");
-        location = LocationManager.getLocation(LocationId.getIdFromInt(rset.getInt("location")));
     }
 
     @Override
@@ -128,7 +110,6 @@ public class Coordinate extends DataObject {
         rset.updateDouble("x", x);
         rset.updateDouble("y", y);
         rset.updateDouble("z", z);
-        rset.updateInt("location", hasLocation() ? location.getId().asInt() : 0);
     }
 
     @Override
