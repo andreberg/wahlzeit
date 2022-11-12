@@ -24,7 +24,7 @@ public class PhotoTest {
         Photo photo = new Photo();
         assertNull(photo.getLocation());
         Location loc = new Location();
-        loc.setCoordinate(new Coordinate(1,2,3));
+        loc.setCoordinate(new CartesianCoordinate(1,2,3));
         photo.setLocation(loc);
         assertTrue(photo.getLocation().isEqual(loc));
     }

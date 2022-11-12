@@ -2,55 +2,49 @@ package org.wahlzeit.model;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class CoordinateTest {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void constructorWithNaNShouldThrowException() {
-        new Coordinate(Double.NaN, 0, 0);
-    }
+    public static final double eps = 1e-14;
 
-    @Test(expected = IllegalArgumentException.class)
-    public void constructorWithNegInfinityShouldThrowException() {
-        new Coordinate(0, Double.NEGATIVE_INFINITY, 0);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void constructorWithPosInfinityShouldThrowException() {
-        new Coordinate(0, 0, Double.POSITIVE_INFINITY);
+    @Test
+    public void testSphericalToCartesianConversion() {
+        SphericalCoordinate a = new SphericalCoordinate(30,60,5);
+        CartesianCoordinate aAsCartesian = a.asCartesianCoordinate();
+        assertEquals(1.25, aAsCartesian.getX(), eps);
+        assertEquals(2.165063509461096, aAsCartesian.getY(), eps);
+        assertEquals(4.330127018922194, aAsCartesian.getZ(), eps);
     }
 
     @Test
-    public void testConstructorWithNegativeArgs() {
-        assertTrue(new Coordinate(-1, -100, -1000).isEqual(new Coordinate(0,0,0)));
-    }
-
-    // somewhat unneccesary it feels like...
-    @Test
-    public void testConstructorWithLargeArgs() {
-        assertTrue(new Coordinate(100.0E300, 175.0E306, 0).isEqual(new Coordinate(100.0E300,175.0E306,0)));
-    }
-
-    @Test
-    public void testConstructorWithNominalArgs() {
-        assertTrue(new Coordinate(150.3456, 3.14159, 22.0/7.0).isEqual(new Coordinate(150.3456,3.14159,22.0/7.0)));
+    public void testCartesianToSphericalConversion() {
+        CartesianCoordinate a = new CartesianCoordinate(1.25,2.165063509461096,4.330127018922194);
+        SphericalCoordinate aAsSpherical = a.asSphericalCoordinate();
+        double phi_degrees = Math.toDegrees(aAsSpherical.getPhi());
+        double theta_degrees = Math.toDegrees(aAsSpherical.getTheta());
+        double radius = aAsSpherical.getRadius();
+        // System.out.println(aAsSpherical);
+        assertEquals(30, phi_degrees, eps);
+        assertEquals(60,theta_degrees, eps);
+        assertEquals(5, radius, eps);
     }
 
     @Test
-    public void testGetDistance() {
-        Coordinate a = new Coordinate(2, 3, 1);
-        Coordinate b = new Coordinate(8,5,0);
-        double distance = a.getDistance(b);
-        assertTrue(Double.compare(distance, 6.4031242374328485) == 0);
+    public void testCentralAngleBetweenTwoCartesianCoords() {
+        Coordinate a = new CartesianCoordinate(1,2,3);
+        Coordinate b = new CartesianCoordinate(0,0,0);
+        double sphericalDist = a.getCentralAngle(b);
+        // System.out.format("\nsphericalDist = %s\n", sphericalDist);
+        assertEquals(1.204062267702623, sphericalDist, eps);
     }
 
     @Test
-    public void testGetDistanceWithNegativeArgs() {
-        Coordinate a = new Coordinate(2, 3, 1);
-        Coordinate b = new Coordinate(8,-5,0);
-        double distance = a.getDistance(b);
-        assertTrue(Double.compare(distance, 6.782329983125268) == 0);
+    public void testCartesianDistanceBetweenTwoSphericalCoords() {
+        Coordinate a = new SphericalCoordinate(27,33,1);
+        Coordinate b = new SphericalCoordinate(0,0,0);
+        double cartesianDist = a.getCartesianDistance(b);
+        // System.out.format("\ncartesianDist = %s\n", cartesianDist);
+        assertEquals(1, cartesianDist, eps);
     }
 }
