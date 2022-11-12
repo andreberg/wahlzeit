@@ -1,57 +1,58 @@
 package org.wahlzeit.model;
 
-import java.lang.*;
+import org.wahlzeit.services.Persistent;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Objects;
 
-import org.wahlzeit.services.*;
+public interface Coordinate extends Persistent {
 
-public class Coordinate extends DataObject {
+    CartesianCoordinate asCartesianCoordinate();
 
-    protected CoordinateId id;
-    protected static CoordinateId lastCoordinateId = new CoordinateId(0);
+    default double getCartesianDistance(Coordinate to) {
 
-    private double x, y, z;
-
-    public Coordinate(ResultSet rset) throws SQLException {
-        readFrom(rset);
-    }
-
-    public Coordinate(CoordinateId myId) {
-        id = myId;
-        incWriteCount();
-    }
-
-    public Coordinate(double x, double y, double z) {
-
-        if (!Double.isFinite(x)) throw new IllegalArgumentException("x is not finite!");
-        if (!Double.isFinite(y)) throw new IllegalArgumentException("y is not finite!");
-        if (!Double.isFinite(z)) throw new IllegalArgumentException("z is not finite!");
-        this.x = Math.max(0.0, x);
-        this.y = Math.max(0.0, y);
-        this.z = Math.max(0.0, z);
-
-        id = getNextCoordinateId();
-        incWriteCount();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-
-        if (!(o instanceof Coordinate)) {
-            return false;
+        if (null == to) {
+            return 0;
         }
-        return isEqual((Coordinate) o);
+
+        CartesianCoordinate a = to.asCartesianCoordinate();
+        CartesianCoordinate b = this.asCartesianCoordinate();
+        double xdiff = a.getX() - b.getX();
+        double ydiff = a.getY() - b.getY();
+        double zdiff = a.getZ() - b.getZ();
+
+        return Math.sqrt((xdiff * xdiff) + (ydiff * ydiff) + (zdiff * zdiff));
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, x, y, z);
+    SphericalCoordinate asSphericalCoordinate();
+
+    default double getCentralAngle(Coordinate to) {
+
+        if (null == to) {
+            return 0;
+        }
+
+        double theta1 = to.asSphericalCoordinate().getTheta();
+        double theta2 = this.asSphericalCoordinate().getTheta();
+        double phi1 = to.asSphericalCoordinate().getPhi();
+        double phi2 = this.asSphericalCoordinate().getPhi();
+
+        double delta_theta = Math.abs(theta1 - theta2);
+
+        // spherical law of cosines
+        //double delta_sigma = Math.acos(Math.sin(phi1) * Math.sin(phi2) + Math.cos(phi1) * Math.cos(phi2) * Math.cos(delta_theta));
+
+        // vincenty
+        double t1 = Math.cos(phi2) * Math.sin(delta_theta);
+        double t2 = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(delta_theta);
+        double y = Math.sin(phi1) * Math.sin(phi2) + Math.cos(phi1) * Math.cos(phi2) * Math.cos(delta_theta);
+        double x = Math.sqrt(t1 * t1 + t2 * t2);
+        double delta_sigma = Math.atan2(x, y);
+        return delta_sigma;
     }
 
-    public boolean isEqual(Coordinate other) {
+    default boolean isEqual(Coordinate other) {
 
         if (this == other) {
             return true;
@@ -59,81 +60,30 @@ public class Coordinate extends DataObject {
         if (null == other || this.getClass() != other.getClass()) {
             return false;
         }
-        return (Double.compare(x, other.getX()) == 0) &&
-                (Double.compare(y, other.getY()) == 0) &&
-                (Double.compare(z, other.getZ()) == 0);
-    }
 
-    public double getX() {
-        return x;
-    }
+        double dist;
 
-    public double getY() {
-        return y;
-    }
-
-    public double getZ() {
-        return z;
-    }
-
-    protected double getDistance(Coordinate other) {
-
-        if (null == other) {
-            return 0;
+        if (other instanceof SphericalCoordinate) {
+            dist = other.getCentralAngle(this.asSphericalCoordinate());
+        } else if (other instanceof CartesianCoordinate) {
+            dist = other.getCartesianDistance(this.asCartesianCoordinate());
+        } else {
+            throw new IllegalArgumentException("coordinate being compared is of unknown type");
         }
-
-        double xdiff = other.getX() - x;
-        double ydiff = other.getY() - y;
-        double zdiff = other.getZ() - z;
-
-        return Math.sqrt((xdiff * xdiff) + (ydiff * ydiff) + (zdiff * zdiff));
+        return Math.abs(dist - 0) < 1e-14;
     }
+
+    CoordinateId getId();
 
     @Override
-    public String getIdAsString() {
-        return String.valueOf(id);
-    }
+    String getIdAsString();
 
     @Override
-    public void readFrom(ResultSet rset) throws SQLException {
-
-        id = new CoordinateId(rset.getInt("id"));
-        x = rset.getDouble("x");
-        y = rset.getDouble("y");
-        z = rset.getDouble("z");
-    }
+    void readFrom(ResultSet rset) throws SQLException;
 
     @Override
-    public void writeOn(ResultSet rset) throws SQLException {
-
-        rset.updateInt("id", id.asInt());
-        rset.updateDouble("x", x);
-        rset.updateDouble("y", y);
-        rset.updateDouble("z", z);
-    }
+    void writeOn(ResultSet rset) throws SQLException;
 
     @Override
-    public void writeId(PreparedStatement stmt, int pos) throws SQLException {
-        stmt.setInt(pos, id.asInt());
-    }
-
-    public CoordinateId getId() {
-        return id;
-    }
-
-    public static synchronized CoordinateId getNextCoordinateId() {
-
-        if (lastCoordinateId == null) {
-            return lastCoordinateId = CoordinateId.NULL_ID;
-        }
-        return lastCoordinateId = lastCoordinateId.getNextId();
-    }
-
-    public static synchronized CoordinateId getLastCoordinateId() {
-        return lastCoordinateId;
-    }
-
-    public static synchronized void setLastCoordinateId(CoordinateId newId) {
-        lastCoordinateId = newId;
-    }
+    void writeId(PreparedStatement stmt, int pos) throws SQLException;
 }

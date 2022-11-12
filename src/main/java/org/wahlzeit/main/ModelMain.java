@@ -119,7 +119,7 @@ public abstract class ModelMain extends AbstractMain {
 			AbstractServlet.setLastSessionId(lastSessionId);		
 			SysLog.logSysInfo("loaded global variable lastSessionId: " + lastSessionId);
 			int lastCoordinateId = result.getInt("last_coordinate_id");
-			Coordinate.setLastCoordinateId(new CoordinateId(lastCoordinateId));
+			CartesianCoordinate.setLastCoordinateId(new CoordinateId(lastCoordinateId));
 			SysLog.logSysInfo("loaded global variable lastCoordinateId: " + lastCoordinateId);
 			int lastLocationId = result.getInt("last_location_id");
 			Location.setLastLocationId(new LocationId(lastLocationId));
@@ -156,7 +156,7 @@ public abstract class ModelMain extends AbstractMain {
 			int lastSessionId = AbstractServlet.getLastSessionId();
 			rset.updateInt("last_session_id", lastSessionId);
 			SysLog.logSysInfo("saved global variable lastSessionId: " + lastSessionId);
-			int lastCoordinateId = Coordinate.getLastCoordinateId().asInt();
+			int lastCoordinateId = CartesianCoordinate.getLastCoordinateId().asInt();
 			rset.updateInt("last_coordinate_id", lastCoordinateId);
 			SysLog.logSysInfo("saved global variable lastCoordinateId: " + lastCoordinateId);
 			int lastLocationId = Location.getLastLocationId().asInt();

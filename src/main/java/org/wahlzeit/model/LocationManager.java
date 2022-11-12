@@ -71,9 +71,9 @@ public class LocationManager extends ObjectManager {
 
         stmt = getReadingStatement("INSERT INTO coordinates VALUES(?, ?, ?, ?)");
         stmt.setInt(1, coordinate.getId().asInt());
-        stmt.setDouble(2, coordinate.getX());
-        stmt.setDouble(3, coordinate.getY());
-        stmt.setDouble(4, coordinate.getZ());
+        stmt.setDouble(2, coordinate.asCartesianCoordinate().getX());
+        stmt.setDouble(3, coordinate.asCartesianCoordinate().getY());
+        stmt.setDouble(4, coordinate.asCartesianCoordinate().getZ());
 
         SysLog.logQuery(stmt);
         stmt.executeUpdate();

@@ -18,7 +18,7 @@ public class Location extends DataObject {
         // be careful here:
         // this should not be replaced by Coordinate.NULL_COORDINATE
         // because then the coordinate ID wouldn't be incremented!
-        this(new Coordinate(0,0,0));
+        this(new CartesianCoordinate(0,0,0));
     }
 
     public Location(ResultSet rset) throws SQLException {
