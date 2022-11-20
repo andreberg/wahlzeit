@@ -1,13 +1,11 @@
 package org.wahlzeit.model;
 
-import org.wahlzeit.services.DataObject;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
 
-public class SphericalCoordinate extends DataObject implements Coordinate {
+public class SphericalCoordinate extends AbstractCoordinate {
 
     protected CoordinateId id;
     protected static CoordinateId lastCoordinateId = new CoordinateId(0);
@@ -70,15 +68,6 @@ public class SphericalCoordinate extends DataObject implements Coordinate {
 
     static void setLastCoordinateId(CoordinateId newId) {
         lastCoordinateId = newId;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-
-        if (!(o instanceof SphericalCoordinate)) {
-            return false;
-        }
-        return isEqual((SphericalCoordinate) o);
     }
 
     @Override

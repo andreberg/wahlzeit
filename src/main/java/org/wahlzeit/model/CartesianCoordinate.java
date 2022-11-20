@@ -6,9 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
 
-import org.wahlzeit.services.*;
-
-public class CartesianCoordinate extends DataObject implements Coordinate {
+public class CartesianCoordinate extends AbstractCoordinate {
 
     protected CoordinateId id;
     protected static CoordinateId lastCoordinateId = new CoordinateId(0);
@@ -72,15 +70,6 @@ public class CartesianCoordinate extends DataObject implements Coordinate {
 
     public static void setLastCoordinateId(CoordinateId newId) {
         lastCoordinateId = newId;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-
-        if (!(o instanceof CartesianCoordinate)) {
-            return false;
-        }
-        return isEqual((CartesianCoordinate) o);
     }
 
     @Override

@@ -8,6 +8,8 @@ import java.sql.SQLException;
 
 public interface Coordinate extends Persistent {
 
+    double EPSILON = 1e-14;
+
     CartesianCoordinate asCartesianCoordinate();
 
     default double getCartesianDistance(Coordinate to) {
@@ -48,8 +50,7 @@ public interface Coordinate extends Persistent {
         double t2 = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(delta_theta);
         double y = Math.sin(phi1) * Math.sin(phi2) + Math.cos(phi1) * Math.cos(phi2) * Math.cos(delta_theta);
         double x = Math.sqrt(t1 * t1 + t2 * t2);
-        double delta_sigma = Math.atan2(x, y);
-        return delta_sigma;
+        return Math.atan2(x, y);
     }
 
     default boolean isEqual(Coordinate other) {
@@ -70,7 +71,7 @@ public interface Coordinate extends Persistent {
         } else {
             throw new IllegalArgumentException("coordinate being compared is of unknown type");
         }
-        return Math.abs(dist - 0) < 1e-14;
+        return Math.abs(dist - 0) < EPSILON;
     }
 
     CoordinateId getId();
