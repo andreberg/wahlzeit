@@ -7,8 +7,6 @@ import static org.junit.Assert.assertEquals;
 
 public class SphericalCoordinateTest {
 
-    public static final double eps = 1e-14;
-
     @Test(expected = IllegalArgumentException.class)
     public void constructorWithNaNShouldThrowException() {
         new SphericalCoordinate(Double.NaN, 0, 0);
@@ -45,7 +43,7 @@ public class SphericalCoordinateTest {
         SphericalCoordinate b = new SphericalCoordinate(0,90,1);
         double distance = a.getCentralAngle(b);
         // System.out.println(distance);
-        assertEquals(Math.PI*0.5, distance, eps);
+        assertEquals(Math.PI*0.5, distance, Coordinate.EPSILON);
     }
 
     @Test
@@ -54,6 +52,6 @@ public class SphericalCoordinateTest {
         SphericalCoordinate b = new SphericalCoordinate(0,-180,1);
         double distance = a.getCentralAngle(b);
         // System.out.println(distance);
-        assertEquals(Math.PI, distance, eps);
+        assertEquals(Math.PI, distance, Coordinate.EPSILON);
     }
 }

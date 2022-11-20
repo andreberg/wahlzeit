@@ -7,8 +7,6 @@ import static org.junit.Assert.assertEquals;
 
 public class CartesianCoordinateTest {
 
-    public static final double eps = 1e-14;
-
     @Test(expected = IllegalArgumentException.class)
     public void constructorWithNaNShouldThrowException() {
         new CartesianCoordinate(Double.NaN, 0, 0);
@@ -45,7 +43,7 @@ public class CartesianCoordinateTest {
         CartesianCoordinate a = new CartesianCoordinate(2, 3, 1);
         CartesianCoordinate b = new CartesianCoordinate(8,5,0);
         double distance = a.getDistance(b);
-        assertEquals(6.4031242374328485, distance, eps);
+        assertEquals(6.4031242374328485, distance, Coordinate.EPSILON);
     }
 
     @Test
@@ -53,6 +51,6 @@ public class CartesianCoordinateTest {
         CartesianCoordinate a = new CartesianCoordinate(2, 3, 1);
         CartesianCoordinate b = new CartesianCoordinate(8,-5,0);
         double distance = a.getDistance(b);
-        assertEquals(6.782329983125268, distance, eps);
+        assertEquals(6.782329983125268, distance, Coordinate.EPSILON);
     }
 }
