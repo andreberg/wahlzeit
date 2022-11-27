@@ -7,17 +7,17 @@ import static org.junit.Assert.assertEquals;
 
 public class SphericalCoordinateTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = AssertionError.class)
     public void constructorWithNaNShouldThrowException() {
         new SphericalCoordinate(Double.NaN, 0, 0);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = AssertionError.class)
     public void constructorWithNegInfinityShouldThrowException() {
         new SphericalCoordinate(0, Double.NEGATIVE_INFINITY, 0);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = AssertionError.class)
     public void constructorWithPosInfinityShouldThrowException() {
         new SphericalCoordinate(0, 0, Double.POSITIVE_INFINITY);
     }

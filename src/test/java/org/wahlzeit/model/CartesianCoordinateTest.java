@@ -7,17 +7,17 @@ import static org.junit.Assert.assertEquals;
 
 public class CartesianCoordinateTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = AssertionError.class)
     public void constructorWithNaNShouldThrowException() {
         new CartesianCoordinate(Double.NaN, 0, 0);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = AssertionError.class)
     public void constructorWithNegInfinityShouldThrowException() {
         new CartesianCoordinate(0, Double.NEGATIVE_INFINITY, 0);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = AssertionError.class)
     public void constructorWithPosInfinityShouldThrowException() {
         new CartesianCoordinate(0, 0, Double.POSITIVE_INFINITY);
     }
@@ -42,7 +42,7 @@ public class CartesianCoordinateTest {
     public void testGetDistance() {
         CartesianCoordinate a = new CartesianCoordinate(2, 3, 1);
         CartesianCoordinate b = new CartesianCoordinate(8,5,0);
-        double distance = a.getDistance(b);
+        double distance = a.getCartesianDistance(b);
         assertEquals(6.4031242374328485, distance, Coordinate.EPSILON);
     }
 
@@ -50,7 +50,7 @@ public class CartesianCoordinateTest {
     public void testGetDistanceWithNegativeArgs() {
         CartesianCoordinate a = new CartesianCoordinate(2, 3, 1);
         CartesianCoordinate b = new CartesianCoordinate(8,-5,0);
-        double distance = a.getDistance(b);
+        double distance = a.getCartesianDistance(b);
         assertEquals(6.782329983125268, distance, Coordinate.EPSILON);
     }
 }

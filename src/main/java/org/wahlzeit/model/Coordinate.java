@@ -1,6 +1,8 @@
 package org.wahlzeit.model;
 
 import org.wahlzeit.services.Persistent;
+import static org.wahlzeit.utils.AssertUtil.assertNonNegative;
+import static org.wahlzeit.utils.AssertUtil.assertIsFinite;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,6 +14,11 @@ public interface Coordinate extends Persistent {
 
     CartesianCoordinate asCartesianCoordinate();
 
+    /**
+     * @Preconditions:
+     * @Postconditions: Double.isFinite(result) && result >= 0
+     * @Invariants:
+     */
     default double getCartesianDistance(Coordinate to) {
 
         if (null == to) {
@@ -24,11 +31,21 @@ public interface Coordinate extends Persistent {
         double ydiff = a.getY() - b.getY();
         double zdiff = a.getZ() - b.getZ();
 
-        return Math.sqrt((xdiff * xdiff) + (ydiff * ydiff) + (zdiff * zdiff));
+        double result = Math.sqrt((xdiff * xdiff) + (ydiff * ydiff) + (zdiff * zdiff));
+
+        // assert post-conditions
+        assertIsFinite(result);
+        assertNonNegative(result);
+        return result;
     }
 
     SphericalCoordinate asSphericalCoordinate();
 
+    /**
+     * @Preconditions:
+     * @Postconditions: Double.isFinite(result)
+     * @Invariants:
+     */
     default double getCentralAngle(Coordinate to) {
 
         if (null == to) {
@@ -50,9 +67,19 @@ public interface Coordinate extends Persistent {
         double t2 = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(delta_theta);
         double y = Math.sin(phi1) * Math.sin(phi2) + Math.cos(phi1) * Math.cos(phi2) * Math.cos(delta_theta);
         double x = Math.sqrt(t1 * t1 + t2 * t2);
-        return Math.atan2(x, y);
+        double result = Math.atan2(x, y);
+
+        // assert post-conditions
+        assertIsFinite(result);
+        return result;
     }
 
+    /**
+     * @Preconditions: "other's Coordinate type is known, i.e. distance measuring and conversion methods exist
+     *                  for this Coordinate implementation."
+     * @Postconditions:
+     * @Invariants:
+     */
     default boolean isEqual(Coordinate other) {
 
         if (this == other) {
@@ -69,7 +96,7 @@ public interface Coordinate extends Persistent {
         } else if (other instanceof CartesianCoordinate) {
             dist = other.getCartesianDistance(this.asCartesianCoordinate());
         } else {
-            throw new IllegalArgumentException("coordinate being compared is of unknown type");
+            throw new AssertionError("coordinate being compared is of unknown type");
         }
         return Math.abs(dist - 0) < EPSILON;
     }

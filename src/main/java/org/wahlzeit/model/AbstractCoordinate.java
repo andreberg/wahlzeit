@@ -23,14 +23,6 @@ import java.sql.SQLException;
  */
 public abstract class AbstractCoordinate extends DataObject implements Coordinate {
 
-    public boolean equals(Object o) {
-
-        if (!(o instanceof AbstractCoordinate)) {
-            return false;
-        }
-        return isEqual((AbstractCoordinate) o);
-    }
-
     // ---- Coordinate interface methods ----
 
     @Override
@@ -59,4 +51,19 @@ public abstract class AbstractCoordinate extends DataObject implements Coordinat
 
     @Override
     public abstract void writeId(PreparedStatement stmt, int pos) throws SQLException;
+
+    // ---- Object Overrides ----
+    @Override
+    public boolean equals(Object o) {
+
+        if (!(o instanceof AbstractCoordinate)) {
+            return false;
+        }
+        return isEqual((AbstractCoordinate) o);
+    }
+
+    // ---- Design-by-Contract Methods ----
+    public void assertWriteCountPlusOne(int oldWriteCount) {
+        assert writeCount == oldWriteCount + 1;
+    }
 }
