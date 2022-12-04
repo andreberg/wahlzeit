@@ -2,6 +2,7 @@ package org.wahlzeit.model;
 
 import org.wahlzeit.services.ObjectManager;
 import org.wahlzeit.services.SysLog;
+import static org.wahlzeit.utils.AssertUtil.*;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,7 +29,14 @@ public class CoordinateManager extends ObjectManager {
         return instance.getCoordinateFromId(id);
     }
 
+    /**
+     * @Preconditions: id != null
+     * @Postconditions:
+     * @Invariants:
+     */
     private Coordinate getCoordinateFromId(CoordinateId id) {
+
+        assertNotNull(id);
 
         if (CoordinateId.NULL_ID == id) {
             return null;
