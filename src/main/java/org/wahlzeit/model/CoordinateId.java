@@ -1,5 +1,7 @@
 package org.wahlzeit.model;
 
+import static org.wahlzeit.utils.AssertUtil.*;
+
 public class CoordinateId {
 
     public static final CoordinateId NULL_ID = new CoordinateId(0);
@@ -14,17 +16,37 @@ public class CoordinateId {
         return id;
     }
 
+    /**
+     * @Preconditions:
+     * @Postconditions: result.id == id + 1
+     * @Invariants:
+     */
     public CoordinateId getNextId() {
-        return new CoordinateId(id + 1);
+
+        CoordinateId result = new CoordinateId(id + 1);
+
+        assertPlusOne(result.id, id);
+
+        return result;
     }
 
+    /**
+     * @Preconditions:
+     * @Postconditions: result.id >= 0
+     * @Invariants:
+     */
     public static CoordinateId getIdFromInt(int id) {
 
         if (id < 0) {
             return NULL_ID;
         }
+
+        // postconditions trivially true
+
         return new CoordinateId(id);
     }
+
+    // --- Object Overrides ---
 
     @Override
     public int hashCode() {
