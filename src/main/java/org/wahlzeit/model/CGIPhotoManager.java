@@ -2,6 +2,7 @@ package org.wahlzeit.model;
 
 import org.wahlzeit.main.ServiceMain;
 import org.wahlzeit.services.SysLog;
+import static org.wahlzeit.utils.AssertUtil.*;
 
 import java.io.File;
 import java.sql.PreparedStatement;
@@ -25,7 +26,14 @@ public class CGIPhotoManager extends PhotoManager {
         return photoCache.get(id);
     }
 
+    /**
+     * @Preconditions: id != null
+     * @Postconditions:
+     * @Invariants:
+     */
     public CGIPhoto getPhotoFromId(PhotoId id) {
+
+        assertNotNull(id);
 
         if (id.isNullId()) {
             return null;
@@ -52,7 +60,14 @@ public class CGIPhotoManager extends PhotoManager {
         photoCache.put(myPhoto.getId(), myPhoto);
     }
 
+    /**
+     * @Preconditions: photo != null
+     * @Postconditions:
+     * @Invariants:
+     */
     public void addPhoto(CGIPhoto photo) {
+
+        assertNotNull(photo);
 
         PhotoId id = photo.getId();
         assertIsNewPhoto(id);
@@ -98,7 +113,14 @@ public class CGIPhotoManager extends PhotoManager {
         return result;
     }
 
+    /**
+     * @Preconditions: filter != null
+     * @Postconditions:
+     * @Invariants:
+     */
     protected CGIPhoto getPhotoFromFilter(PhotoFilter filter) {
+
+        assertNotNull(filter);
 
         PhotoId id = filter.getRandomDisplayablePhotoId();
 

@@ -30,7 +30,7 @@ public class CGIPhotoFactory extends PhotoFactory {
      */
     protected static synchronized void setInstance(CGIPhotoFactory cgiPhotoFactory) {
 
-        assertNull(instance);
+        // assertNull(instance);
 
         if (instance != null) {
             throw new IllegalStateException("attempt to initialize CGIPhotoFactory twice");
