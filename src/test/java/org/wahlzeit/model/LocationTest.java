@@ -23,13 +23,13 @@ public class LocationTest {
         assertTrue(loc.getCoordinate().isEqual(new CartesianCoordinate(1,2,3)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = AssertionError.class)
     public void setCoordinateWithNullShouldThrowException() {
         Location loc = new Location();
         loc.setCoordinate(null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = AssertionError.class)
     public void constructorWithNullCoordShouldTrowException() {
         new Location((CartesianCoordinate) null);
     }

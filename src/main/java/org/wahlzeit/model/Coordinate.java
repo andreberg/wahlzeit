@@ -80,7 +80,7 @@ public interface Coordinate extends Persistent {
      * @Postconditions:
      * @Invariants:
      */
-    default boolean isEqual(Coordinate other) {
+    default boolean isEqual(Coordinate other) throws UnknownCoordinateTypeException {
 
         if (this == other) {
             return true;
@@ -96,12 +96,14 @@ public interface Coordinate extends Persistent {
         } else if (other instanceof CartesianCoordinate) {
             dist = other.getCartesianDistance(this.asCartesianCoordinate());
         } else {
-            throw new AssertionError("coordinate being compared is of unknown type");
+            throw new UnknownCoordinateTypeException("coordinate being compared is of unknown type");
         }
         return Math.abs(dist - 0) < EPSILON;
     }
 
     CoordinateId getId();
+
+    // --- Persistent Interface Overrides ---
 
     @Override
     String getIdAsString();

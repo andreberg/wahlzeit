@@ -1,6 +1,7 @@
 package org.wahlzeit.model;
 
 import org.wahlzeit.services.DataObject;
+import static org.wahlzeit.utils.AssertUtil.*;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,26 +31,26 @@ public class Location extends DataObject {
         incWriteCount();
     }
 
+    /**
+     * @Preconditions: coordinate != null
+     * @Postconditions: this.coordinate == coordinate && this.id == lastLocationId + 1
+     * @Invariants:
+     */
     public Location(Coordinate coordinate) {
-        if (null == coordinate) {
-            throw new IllegalArgumentException("coordinate cannot be null!");
-        }
+
+        LocationId oldLastLocationId = lastLocationId;
+
+        assertNotNull(coordinate);
+
         this.coordinate = coordinate;
         id = getNextLocationId();
+
+        assertPlusOne(id.asInt(), oldLastLocationId.asInt());
+
         incWriteCount();
     }
 
-    public Coordinate getCoordinate() {
-        return coordinate;
-    }
-
-    public void setCoordinate(Coordinate newCoordinate) {
-        if (null == newCoordinate) throw new IllegalArgumentException("newCoordinate cannot be null");
-        coordinate = newCoordinate;
-        incWriteCount();
-    }
-
-    public boolean isEqual(Location other) {
+    public boolean isEqual(Location other) throws UnknownCoordinateTypeException {
 
         if (this == other) {
             return true;
@@ -60,31 +61,68 @@ public class Location extends DataObject {
         return coordinate.isEqual(other.getCoordinate());
     }
 
-    @Override
-    public String getIdAsString() {
-        return String.valueOf(id);
+    public Coordinate getCoordinate() {
+        return coordinate;
     }
 
-    @Override
-    public void readFrom(ResultSet rset) throws SQLException {
-        id = new LocationId(rset.getInt("id"));
-        coordinate = CoordinateManager.getCoordinate(CoordinateId.getIdFromInt(rset.getInt("coordinate")));
-    }
-
-    @Override
-    public void writeOn(ResultSet rset) throws SQLException {
-        rset.updateInt("id", id.asInt());
-        rset.updateInt("coordinate", (coordinate == null) ? 0 : coordinate.getId().asInt());
-    }
-
-    @Override
-    public void writeId(PreparedStatement stmt, int pos) throws SQLException {
-        stmt.setInt(pos, id.asInt());
+    /**
+     * @Preconditions: newCoordinate != null
+     * @Postconditions:
+     * @Invariants:
+     */
+    public void setCoordinate(Coordinate newCoordinate) {
+        assertNotNull(newCoordinate);
+        coordinate = newCoordinate;
+        incWriteCount();
     }
 
     public LocationId getId() {
         return id;
     }
+
+    // --- Persistent Interface Overrides ---
+
+    @Override
+    public String getIdAsString() {
+        return String.valueOf(id);
+    }
+
+    /**
+     * @Preconditions: rset != null
+     * @Postconditions:
+     * @Invariants:
+     */
+    @Override
+    public void readFrom(ResultSet rset) throws SQLException {
+        assertNotNull(rset);
+        id = new LocationId(rset.getInt("id"));
+        coordinate = CoordinateManager.getCoordinate(CoordinateId.getIdFromInt(rset.getInt("coordinate")));
+    }
+
+    /**
+     * @Preconditions: rset != null
+     * @Postconditions:
+     * @Invariants:
+     */
+    @Override
+    public void writeOn(ResultSet rset) throws SQLException {
+        assertNotNull(rset);
+        rset.updateInt("id", id.asInt());
+        rset.updateInt("coordinate", (coordinate == null) ? 0 : coordinate.getId().asInt());
+    }
+
+    /**
+     * @Preconditions: stmt != null
+     * @Postconditions:
+     * @Invariants:
+     */
+    @Override
+    public void writeId(PreparedStatement stmt, int pos) throws SQLException {
+        assertNotNull(stmt);
+        stmt.setInt(pos, id.asInt());
+    }
+
+    // --- Static Getters/Setters For LastLocationID ---
 
     public static synchronized LocationId getNextLocationId() {
 
