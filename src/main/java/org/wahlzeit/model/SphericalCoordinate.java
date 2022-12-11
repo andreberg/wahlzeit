@@ -5,17 +5,25 @@ import static org.wahlzeit.utils.AssertUtil.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class SphericalCoordinate extends AbstractCoordinate {
 
-    protected CoordinateId id;
+    protected final CoordinateId id;
     protected static CoordinateId lastCoordinateId = new CoordinateId(0);
 
-    private double phi = 0, theta = 0, radius = 0;
+    public static Map<String, SphericalCoordinate> allSphericalCoordinates = new HashMap<>();
 
-    public SphericalCoordinate(ResultSet rset) throws SQLException {
-        readFrom(rset);
+    private final double phi, theta, radius;
+
+    private SphericalCoordinate(ResultSet rset) throws SQLException {
+
+        id = new CoordinateId(rset.getInt("id"));
+        phi = rset.getDouble("x");
+        theta = rset.getDouble("y");
+        radius = rset.getDouble("z");
     }
 
     /**
@@ -33,6 +41,8 @@ public class SphericalCoordinate extends AbstractCoordinate {
         id = myId;
         incWriteCount();
 
+        phi = theta = radius = 0;
+
         // check post-conditions
         assertEquals(this.id, myId);
         assertWriteCountPlusOne(oldWriteCount);
@@ -48,7 +58,14 @@ public class SphericalCoordinate extends AbstractCoordinate {
      * @Invariants:
      */
     public SphericalCoordinate(CartesianCoordinate cc) {
-        this(cc.getId());  // calls assertNotNull(cc), assertWriteCountPlusOne(...) -- this(...) has to be first line
+
+        final int oldWriteCount = writeCount;
+
+        id = cc.getId();
+        incWriteCount();
+
+        // check pre-conditions
+        assertNotNull(cc.getId());
 
         double x = cc.getX();
         double y = cc.getY();
@@ -59,7 +76,7 @@ public class SphericalCoordinate extends AbstractCoordinate {
 
         // check post-conditions
         assertEquals(this.id.asInt(), cc.getId().asInt());
-        // assertWriteCountPlusOne checked in first-line constructor call
+        assertWriteCountPlusOne(oldWriteCount);
         assertIsFinite(this.phi);
         assertIsFinite(this.theta);
         assertIsFinite(this.radius);
@@ -76,7 +93,7 @@ public class SphericalCoordinate extends AbstractCoordinate {
      *                  Double.isFinite(this.radius)
      * @Invariants:
      */
-    public SphericalCoordinate(double phi_degrees, double theta_degrees, double radius) {
+    private SphericalCoordinate(double phi_degrees, double theta_degrees, double radius) {
 
         final int oldWriteCount = writeCount;
 
@@ -84,10 +101,6 @@ public class SphericalCoordinate extends AbstractCoordinate {
         assertIsFinite(phi_degrees);
         assertIsFinite(theta_degrees);
         assertIsFinite(radius);
-
-        // if (!Double.isFinite(phi_degrees)) throw new IllegalArgumentException("phi is not finite!");
-        // if (!Double.isFinite(theta_degrees)) throw new IllegalArgumentException("theta is not finite!");
-        // if (!Double.isFinite(radius)) throw new IllegalArgumentException("radius is not finite!");
 
         this.phi = Math.toRadians(phi_degrees);
         this.theta = Math.toRadians(theta_degrees);
@@ -185,10 +198,9 @@ public class SphericalCoordinate extends AbstractCoordinate {
     @Override
     public void readFrom(ResultSet rset) throws SQLException {
 
-        id = new CoordinateId(rset.getInt("id"));
-        phi = rset.getDouble("x");
-        theta = rset.getDouble("y");
-        radius = rset.getDouble("z");
+        // this will 'register' the spherical coordinate read
+        // from rset in allSphericalCoordinates
+        getSphericalCoordinate(rset);
     }
 
     @Override
@@ -221,5 +233,30 @@ public class SphericalCoordinate extends AbstractCoordinate {
 
     protected void assertInvariantId(CoordinateId id) {
         assert this.id == id;
+    }
+
+    // ---- Value Type Implementation Methods ----
+
+    public static SphericalCoordinate getSphericalCoordinate(double phi, double theta, double radius) {
+        String key = makeKey("SphericalCoordinate", phi, theta, radius);
+        SphericalCoordinate result = allSphericalCoordinates.get(key);
+        if (result == null) {
+            synchronized (SphericalCoordinate.class) {
+                result = allSphericalCoordinates.get(key);
+                if (result == null) {
+                    result = new SphericalCoordinate(phi, theta, radius);
+                    allSphericalCoordinates.put(key, result);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static SphericalCoordinate getSphericalCoordinate(ResultSet rset) throws SQLException {
+
+        double phi = rset.getDouble("x");
+        double theta = rset.getDouble("y");
+        double radius = rset.getDouble("z");
+        return getSphericalCoordinate(phi, theta, radius);
     }
 }

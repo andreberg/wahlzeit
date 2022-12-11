@@ -10,9 +10,9 @@ public class AbstractCoordinateTest {
     @Test
     public void testEquals() {
 
-        Coordinate cc1 = new CartesianCoordinate(0, 0, 0);
-        Coordinate cc2 = new CartesianCoordinate(0,0, Coordinate.EPSILON);
-        Coordinate cc3 = new CartesianCoordinate(0,0,1e-15);
+        Coordinate cc1 = CartesianCoordinate.getCartesianCoordinate(0, 0, 0);
+        Coordinate cc2 = CartesianCoordinate.getCartesianCoordinate(0,0, Coordinate.EPSILON);
+        Coordinate cc3 = CartesianCoordinate.getCartesianCoordinate(0,0,1e-15);
 
         // for debugging, ignore...
         // boolean cc1IsEqualToCc3 = cc1.equals(cc3);

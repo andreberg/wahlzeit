@@ -22,7 +22,8 @@ public class CoordinateManager extends ObjectManager {
 
     @Override
     protected Coordinate createObject(ResultSet rset) throws SQLException {
-        return new CartesianCoordinate(rset);
+
+        return CartesianCoordinate.getCartesianCoordinate(rset);
     }
 
     public static final Coordinate getCoordinate(CoordinateId id) {

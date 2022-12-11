@@ -5,18 +5,26 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.wahlzeit.utils.AssertUtil.*;
 
 public class CartesianCoordinate extends AbstractCoordinate {
 
-    protected CoordinateId id;
+    protected final CoordinateId id;
     protected static CoordinateId lastCoordinateId = new CoordinateId(0);
 
-    private double x = 0, y = 0, z = 0;
+    public static Map<String, CartesianCoordinate> allCartesianCoordinates = new HashMap<>();
 
-    public CartesianCoordinate(ResultSet rset) throws SQLException {
-        readFrom(rset);
+    private final double x, y, z;
+
+    private CartesianCoordinate(ResultSet rset) throws SQLException {
+
+        id = new CoordinateId(rset.getInt("id"));
+        x = rset.getDouble("x");
+        y = rset.getDouble("y");
+        z = rset.getDouble("z");
     }
 
     /**
@@ -24,7 +32,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
      * @Postconditions: this.id == myId && this.writeCount == old(this.writeCount) + 1
      * @Invariants:
      */
-    public CartesianCoordinate(CoordinateId myId) {
+    private CartesianCoordinate(CoordinateId myId) {
 
         final int oldWriteCount = writeCount;
 
@@ -33,6 +41,8 @@ public class CartesianCoordinate extends AbstractCoordinate {
 
         id = myId;
         incWriteCount();
+
+        x = y = z = 0;
 
         // check post-conditions
         assertEquals(this.id, myId);
@@ -49,7 +59,15 @@ public class CartesianCoordinate extends AbstractCoordinate {
      * @Invariants:
      */
     public CartesianCoordinate(SphericalCoordinate sc) {
-        this(sc.getId());  // calls assertNotNull(cc), assertWriteCountPlusOne(...) -- this(...) has to be first line
+
+        final int oldWriteCount = writeCount;
+
+        id = sc.getId();
+        incWriteCount();
+
+        // check pre-conditions
+        assertNotNull(sc.getId());
+
 
         double phi = sc.getPhi();
         double theta = sc.getTheta();
@@ -61,7 +79,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
 
         // check post-conditions
         assertEquals(this.id.asInt(), sc.getId().asInt());
-        // assertWriteCountPlusOne checked in first-line constructor call
+        assertWriteCountPlusOne(oldWriteCount);
         assertIsFinite(this.x);
         assertIsFinite(this.y);
         assertIsFinite(this.z);
@@ -78,11 +96,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
      *                  this.z >= 0
      * @Invariants:
      */
-    public CartesianCoordinate(double x, double y, double z) {
-
-        // if (!Double.isFinite(x)) throw new IllegalArgumentException("x is not finite!");
-        // if (!Double.isFinite(y)) throw new IllegalArgumentException("y is not finite!");
-        // if (!Double.isFinite(z)) throw new IllegalArgumentException("z is not finite!");
+    private CartesianCoordinate(double x, double y, double z) {
 
         final int oldWriteCount = writeCount;
 
@@ -187,10 +201,9 @@ public class CartesianCoordinate extends AbstractCoordinate {
     @Override
     public void readFrom(ResultSet rset) throws SQLException {
 
-        id = new CoordinateId(rset.getInt("id"));
-        x = rset.getDouble("x");
-        y = rset.getDouble("y");
-        z = rset.getDouble("z");
+        // this will 'register' the cartesian coordinate read
+        // from rset in allCartesianCoordinates
+        getCartesianCoordinate(rset);
     }
 
     @Override
@@ -223,5 +236,37 @@ public class CartesianCoordinate extends AbstractCoordinate {
 
     protected void assertInvariantId(CoordinateId id) {
         assert this.id == id;
+    }
+
+    // ---- Value Type Implementation Methods ----
+
+    public static String makeKey(double x, double y, double z) {
+        // convert to fixed point representation, so we
+        // don't get problems with %f format specifier
+        double convFactor = 1.0 / Coordinate.EPSILON;
+        return String.format("CartesianCoordinate(x = %f, y = %f, z = %f)", x * convFactor, y * convFactor, z * convFactor);
+    }
+
+    public static CartesianCoordinate getCartesianCoordinate(double x, double y, double z) {
+        String key = makeKey(x, y, z);
+        CartesianCoordinate result = allCartesianCoordinates.get(key);
+        if (result == null) {
+            synchronized (CartesianCoordinate.class) {
+                result = allCartesianCoordinates.get(key);
+                if (result == null) {
+                    result = new CartesianCoordinate(x, y, z);
+                    allCartesianCoordinates.put(key, result);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static CartesianCoordinate getCartesianCoordinate(ResultSet rset) throws SQLException {
+
+        double x = rset.getDouble("x");
+        double y = rset.getDouble("y");
+        double z = rset.getDouble("z");
+        return getCartesianCoordinate(x, y, z);
     }
 }
