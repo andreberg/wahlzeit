@@ -66,4 +66,11 @@ public abstract class AbstractCoordinate extends DataObject implements Coordinat
     public void assertWriteCountPlusOne(int oldWriteCount) {
         assert writeCount == oldWriteCount + 1;
     }
+
+    public static String makeKey(String name, double x, double y, double z) {
+        // convert to fixed point representation, so we
+        // don't get problems with %f format specifier
+        double convFactor = 1.0 / Coordinate.EPSILON;
+        return String.format("%s(x = %f, y = %f, z = %f)", name, x * convFactor, y * convFactor, z * convFactor);
+    }
 }
