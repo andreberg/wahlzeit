@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public interface Coordinate extends Persistent {
 
-    double EPSILON = 1e-14;
+    double EPSILON = 1e-9;
 
     CartesianCoordinate asCartesianCoordinate();
 
