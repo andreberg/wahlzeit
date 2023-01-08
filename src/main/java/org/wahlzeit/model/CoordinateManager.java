@@ -2,6 +2,8 @@ package org.wahlzeit.model;
 
 import org.wahlzeit.services.ObjectManager;
 import org.wahlzeit.services.SysLog;
+import org.wahlzeit.utils.PatternInstance;
+
 import static org.wahlzeit.utils.AssertUtil.*;
 
 import java.sql.PreparedStatement;
@@ -10,6 +12,12 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+@PatternInstance(
+    patternName = "Mediator",
+    participants = {
+        "ConcreteMediator"
+    }
+)
 public class CoordinateManager extends ObjectManager {
 
     protected static final CoordinateManager instance = new CoordinateManager();

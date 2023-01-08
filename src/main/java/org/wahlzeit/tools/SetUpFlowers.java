@@ -9,10 +9,18 @@ import java.io.File;
 
 import org.wahlzeit.main.*;
 import org.wahlzeit.services.*;
+import org.wahlzeit.utils.PatternInstance;
+
 
 /**
  * Sets up a fresh clean Wahlzeit Flowers application database.
  */
+@PatternInstance(
+	patternName = "Command",
+	participants = {
+		"ConcreteCommand"
+	}
+)
 public class SetUpFlowers extends ScriptMain {
 
 	/**

@@ -6,6 +6,8 @@
 
 package org.wahlzeit.services;
 
+import org.wahlzeit.utils.PatternInstance;
+
 import java.sql.*;
 import java.util.*;
 
@@ -13,6 +15,12 @@ import java.util.*;
  * An ObjectManager creates/reads/updates/deletes Persistent (objects) from a database.
  * It is an abstract superclass that relies on an inheritance interface and the Persistent interface.
  */
+@PatternInstance(
+	patternName = "Mediator",
+	participants = {
+		"AbstractMediator"
+	}
+)
 public abstract class ObjectManager {
 	
 	/**

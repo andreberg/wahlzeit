@@ -6,10 +6,17 @@
 package org.wahlzeit.tools;
 
 import org.wahlzeit.main.*;
+import org.wahlzeit.utils.PatternInstance;
 
 /**
  * A superclass for script classes.
  */
+@PatternInstance(
+	patternName = "Command",
+	participants = {
+		"ConcreteCommand"
+	}
+)
 public class RunScript extends ScriptMain {
 	
 	/**

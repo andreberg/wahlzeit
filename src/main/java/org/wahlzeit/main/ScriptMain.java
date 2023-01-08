@@ -6,10 +6,15 @@
 package org.wahlzeit.main;
 
 import org.wahlzeit.services.*;
+import org.wahlzeit.utils.PatternInstance;
 
 /**
  * A Main class that serves to run scripts (and exit afterwards).
  */
+@PatternInstance(
+	patternName = "Command",
+	participants = { "Command" } // a.k.a. AbstractCommand
+)
 public abstract class ScriptMain extends ModelMain {
 	
 	/**

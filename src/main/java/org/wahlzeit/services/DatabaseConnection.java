@@ -5,6 +5,8 @@
 
 package org.wahlzeit.services;
 
+import org.wahlzeit.utils.PatternInstance;
+
 import java.sql.*;
 import java.util.*;
 
@@ -15,6 +17,12 @@ import java.util.*;
  * @author dirkriehle
  *
  */
+@PatternInstance(
+	patternName = "Mediator",
+	participants = {
+		"ConcreteColleague"
+	}
+)
 public class DatabaseConnection {
 	
 	/**

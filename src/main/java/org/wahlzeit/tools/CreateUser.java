@@ -11,6 +11,12 @@ import org.wahlzeit.main.*;
 /**
  * A script to create users.
  */
+@PatternInstance(
+	patternName = "Command",
+	participants = {
+		"ConcreteCommand"
+	}
+)
 public class CreateUser extends ScriptMain {
 	
 	/**
