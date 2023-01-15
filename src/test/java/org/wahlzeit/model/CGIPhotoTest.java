@@ -9,9 +9,9 @@ import static org.mockito.Mockito.*;
 public class CGIPhotoTest {
 
     @Test
-    public void testCGIPhotoHasEmptySoftwareNameByDefault() {
+    public void testCGIPhotoHasNotSpecifiedSoftwareNameByDefault() {
         CGIPhoto photo = new CGIPhoto();
-        assertTrue(photo.getSoftwareName().isEmpty());
+        assertTrue(photo.getSoftwareName().equals(CGIPhoto.NOT_SPECIFIED));
     }
 
     @Test

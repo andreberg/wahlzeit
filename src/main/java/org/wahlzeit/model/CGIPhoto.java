@@ -11,6 +11,7 @@ import static org.wahlzeit.utils.AssertUtil.*;
 public class CGIPhoto extends Photo {
 
     public static final String SOFTWARE = "software";
+    public static final String NOT_SPECIFIED = "Not specified";
 
     /**
      * This string is shown in place of the software name so the website user knows
@@ -18,7 +19,10 @@ public class CGIPhoto extends Photo {
      */
     public static final String ERR_MSG_READING_SOFTWARE_NAME_FROM_DB = "reading software name from database failed";
 
-    protected String softwareName = "";
+    // Initialize with a catch-all default so unit-tests continue to work
+    // This should be overwritten later when the user uploads a photo with
+    // the CGI Software field filled out in the UI.
+    protected CGISoftware software = CGISoftwareManager.getInstance().createCGISoftware(NOT_SPECIFIED);
 
     public CGIPhoto() {
     }
@@ -37,7 +41,7 @@ public class CGIPhoto extends Photo {
      */
     public CGIPhoto(ResultSet rset) throws SQLException {
         super(rset);
-        softwareName = rset.getString("software_name");
+        CGISoftwareManager.getInstance().createCGISoftware(rset.getString("software_name"));
     }
 
     /**
@@ -47,7 +51,7 @@ public class CGIPhoto extends Photo {
      */
     public CGIPhoto(Photo photo, String softwareName) {
         copyPhotoFields(photo);
-        this.softwareName = softwareName;
+        this.software = CGISoftwareManager.getInstance().createCGISoftware(softwareName);
     }
 
     /**
@@ -63,15 +67,19 @@ public class CGIPhoto extends Photo {
         assertNotNull(photo);
 
         copyPhotoFields(photo);
-        softwareName = readSoftwareNameFromDBForID(photo.getId().asInt());
+        software = getCGISoftwareFromString(readSoftwareNameFromDBForID(photo.getId().asInt()));
 
         assertClassInvariants();
     }
 
     // --- Getters/Setters ---
 
+    protected CGISoftware getCGISoftwareFromString(String softwareName) {
+        return CGISoftwareManager.getInstance().createCGISoftware(softwareName);
+    }
+
     public String getSoftwareName() {
-        return softwareName;
+        return this.software.name;
     }
 
     /**
@@ -80,7 +88,7 @@ public class CGIPhoto extends Photo {
      * @Invariants: this.softwareName != null
      */
     public void setSoftwareName(String softwareName) {
-        this.softwareName = softwareName;
+        this.software = getCGISoftwareFromString(softwareName);
         assertClassInvariants();
     }
 
@@ -135,9 +143,8 @@ public class CGIPhoto extends Photo {
             stmt.setInt(1, id);
             ResultSet rset = stmt.executeQuery();
             if (rset.next()) {
-                softwareName = rset.getString("software_name");
+                result = rset.getString("software_name");
             }
-            result = softwareName;
         } catch (SQLException sex) {
             SysLog.logThrowable(sex);
         }
@@ -163,7 +170,7 @@ public class CGIPhoto extends Photo {
         // preconditions
         assertNotNull(cfg);
 
-        String result = cfg.asCGIPhotoSummary(ownerName, softwareName);
+        String result = cfg.asCGIPhotoSummary(ownerName, this.software.name);
 
         // postconditions
         assertStringNotNullOrEmpty(result);
@@ -182,9 +189,9 @@ public class CGIPhoto extends Photo {
         assertNotNull(rset);
 
         super.readFrom(rset);
-        softwareName = rset.getString("software_name");
+        software = getCGISoftwareFromString(rset.getString("software_name"));
 
-        assertGreater(softwareName.length(), 0);
+        assertGreater(software.name.length(), 0);
 
         assertClassInvariants();
     }
@@ -199,12 +206,12 @@ public class CGIPhoto extends Photo {
         assertNotNull(rset);
 
         super.writeOn(rset);
-        rset.updateString("software_name", softwareName);
+        rset.updateString("software_name", software.name);
 
         assertClassInvariants();
     }
 
     public void assertClassInvariants() {
-        assert this.softwareName != null : "Design-by-contract violation: softwareName can't be null";
+        assert this.software.name != null : "Design-by-contract violation: softwareName can't be null";
     }
 }
