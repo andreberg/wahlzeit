@@ -8,6 +8,46 @@ import java.sql.SQLException;
 
 import static org.wahlzeit.utils.AssertUtil.*;
 
+/**
+ * <p> Photo class that models Computer-generated Images (CGI).
+ *     Has an additional attribute for specifying the software used to generate the image.
+ * </p>
+ *
+ * <p> The software used to make this image can be set in the webPart UI during upload.
+ *     If the user doesn't specify anything, the default value is "Not specified".
+ * </p>
+ * <p>
+ *     The software attribute is implemented as a <i>type object pattern</i>.
+ *     A CGISoftwareManager maps CGISoftwareType type objects to CGISoftware domain objects. <br/>
+ *     Each CGISoftware has a String field 'name' which is set from the text entered into the
+ *     'Made with: ' input box by the user on upload and then later queried from the database
+ *     when displayed in a webPart.
+ * </p>
+ * <p>Object instantiation during upload (bottom is most recent):
+ * <pre><code>
+ *   doHandlePost:55, UploadPhotoFormHandler (org.wahlzeit.handlers)
+ *     createPhoto:142, CGIPhotoManager (org.wahlzeit.model)
+ *       createCGIPhoto:31, PhotoUtil (org.wahlzeit.model)
+ *         createPhoto:58, CGIPhotoFactory (org.wahlzeit.model)
+ *           < init >:43, CGIPhoto (org.wahlzeit.model)
+ * </code></pre>
+ * <p>Object instantiation during display (bottom is most recent):
+ * <pre><code>
+ *   doMakeWebPart:31, ShowUserPhotoFormHandler (org.wahlzeit.handlers)
+ *     < init >:43, CGIPhoto (org.wahlzeit.model) (*)
+ * </code></pre>
+ * (*) uses a copy constructor that replaces a Photo with a CGIPhoto instance.
+ * </p>
+ * <p>Object Creation Solution</p>
+ * <l>
+ *     <li>Delegation: separate-object</li>
+ *     <li>Selection: on-the-spot, by-subclassing</li>
+ *     <li>Configuration: in-code</li>
+ *     <li>Instantiation: by-class-object</li>
+ *     <li>Initialization: default, in-second-step</li>
+ *     <li>Building: default</li>
+ * </l>
+ */
 public class CGIPhoto extends Photo {
 
     public static final String SOFTWARE = "software";
@@ -25,6 +65,7 @@ public class CGIPhoto extends Photo {
     protected CGISoftware software = CGISoftwareManager.getInstance().createCGISoftware(NOT_SPECIFIED);
 
     public CGIPhoto() {
+        SysLog.logSysInfo("CGIPhoto() default constructor called.");
     }
 
     /**
@@ -33,6 +74,7 @@ public class CGIPhoto extends Photo {
      */
     public CGIPhoto(PhotoId myId) {
         super(myId);
+        SysLog.logSysInfo("CGIPhoto(PhotoId myId) constructor called.");
     }
 
     /**
@@ -41,6 +83,7 @@ public class CGIPhoto extends Photo {
      */
     public CGIPhoto(ResultSet rset) throws SQLException {
         super(rset);
+        SysLog.logSysInfo("CGIPhoto(ResultSet rset) constructor called.");
         CGISoftwareManager.getInstance().createCGISoftware(rset.getString("software_name"));
     }
 
@@ -51,6 +94,7 @@ public class CGIPhoto extends Photo {
      */
     public CGIPhoto(Photo photo, String softwareName) {
         copyPhotoFields(photo);
+        SysLog.logSysInfo("CGIPhoto(Photo photo, String softwareName) copy constructor called.");
         this.software = CGISoftwareManager.getInstance().createCGISoftware(softwareName);
     }
 
@@ -68,6 +112,7 @@ public class CGIPhoto extends Photo {
 
         copyPhotoFields(photo);
         software = getCGISoftwareFromString(readSoftwareNameFromDBForID(photo.getId().asInt()));
+        SysLog.logSysInfo("CGIPhoto(Photo photo) copy constructor called.");
 
         assertClassInvariants();
     }

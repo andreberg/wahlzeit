@@ -23,7 +23,7 @@ public class CGISoftwareManager extends ObjectManager {
         return null;
     }
 
-    protected Map<CGISoftwareId, CGISoftware> cgiSoftwareCache = new HashMap<>();
+    protected Map<String, CGISoftware> cgiSoftwareCache = new HashMap<>();
     protected Map<String, CGISoftwareType> cgiSoftwareTypes = new HashMap<>();
 
     public static CGISoftwareManager getInstance() {
@@ -48,9 +48,8 @@ public class CGISoftwareManager extends ObjectManager {
             assertIsValidCGITypeName(parentTypeName);
             ct.parentType = cgiSoftwareTypes.get(parentTypeName);
         }
-        cs = ct.createInstance();
-        cs.name = typeName;
-        cgiSoftwareCache.put(cs.getId(), cs);
+        cs = ct.createInstance(typeName);
+        cgiSoftwareCache.put(cs.name, cs);
         return cs;
     }
 
