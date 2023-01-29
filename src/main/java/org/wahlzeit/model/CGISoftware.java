@@ -32,7 +32,8 @@ import org.wahlzeit.services.SysLog;
  * </code></pre>
  * (*) uses a copy constructor that replaces a Photo with a CGIPhoto instance.
  * </p>
- * <p>Object Creation Solution</p>
+ * <h3/>
+ * <h2>Object Creation Solution</h2>
  * <l>
  *     <li>Delegation: this-object</li>
  *     <li>Selection: by-mapping</li>
@@ -41,6 +42,20 @@ import org.wahlzeit.services.SysLog;
  *     <li>Initialization: default</li>
  *     <li>Building: default, by-building</li>
  * </l>
+ * <br/>
+ * <h2>Collaboration Based Design</h2>
+ * <h3>CGISoftware / CGISoftwareType Collaboration (Type Object)</h3>
+ * <l>
+ *      <li>Purpose: Provide information common to all instances of a type</li>
+ *      <li>Role types: Client, CGISoftware (Base Object), CGISoftwareType (Type Object)</li>
+ *      <li>Role binding: base object, type object</li>
+ *  </l>
+ * <h3>CGISoftware / CGISoftwareManager Collaboration (Manager)</h3>
+ * <l>
+ *      <li>Purpose: Centralize object management in one place</li>
+ *      <li>Role types: Client, CGISoftware (Element), CGISoftwareManager (Manager)</li>
+ *      <li>Role binding: element, manager</li>
+ *  </l>
  */
 public class CGISoftware {
 

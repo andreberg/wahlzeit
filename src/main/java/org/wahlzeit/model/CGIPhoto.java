@@ -38,7 +38,8 @@ import static org.wahlzeit.utils.AssertUtil.*;
  * </code></pre>
  * (*) uses a copy constructor that replaces a Photo with a CGIPhoto instance.
  * </p>
- * <p>Object Creation Solution</p>
+ * <h3/>
+ * <h2>Object Creation Solution</h2>
  * <l>
  *     <li>Delegation: separate-object</li>
  *     <li>Selection: on-the-spot, by-subclassing</li>
@@ -47,6 +48,26 @@ import static org.wahlzeit.utils.AssertUtil.*;
  *     <li>Initialization: default, in-second-step</li>
  *     <li>Building: default</li>
  * </l>
+ * <br/>
+ * <h2>Collaboration Based Design</h2>
+ * <h3>CGIPhoto / CGISoftware Collaboration</h3>
+ * <l>
+ *      <li>Purpose: Provide main domain functionality</li>
+ *      <li>Role types: CGIPhoto (Client), CGISoftware (Service)</li>
+ *      <li>Role binding: client, service</li>
+ * </l>
+ * <h3>CGIPhoto / CGIPhotoFactory Collaboration (Factory)</h3>
+ * <l>
+ *      <li>Purpose: Provide standardized single-point object creation</li>
+ *      <li>Role types: Client, CGIPhoto (Object), CGIPhotoFactory (Factory)</li>
+ *      <li>Role binding: object, factory</li>
+ * </l>
+ * <h3>CGIPhoto / CGIPhotoManager Collaboration (Manager)</h3>
+ * <l>
+ *      <li>Purpose: Centralize object management in one place</li>
+ *      <li>Role types: Client, CGIPhoto (Element), CGIPhotoManager (Manager)</li>
+ *      <li>Role binding: element, manager</li>
+ *  </l>
  */
 public class CGIPhoto extends Photo {
 

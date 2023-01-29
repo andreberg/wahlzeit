@@ -7,6 +7,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * <h2>Collaboration Based Design</h2>
+ * <h3>Location / Coordinate Collaboration</h3>
+ * <l>
+ *      <li>Purpose: assign a fixed spatial reference</li>
+ *      <li>Role types: Location (Client), Coordinate (Service)</li>
+ *      <li>Role binding: client, service</li>
+ * </l>
+ */
 public class Location extends DataObject {
 
     protected LocationId id;
